@@ -1,6 +1,6 @@
 # Compress pixel art 
 
-Tool to compress text files that represent pixel art using ANSI escape codes and visualize it.
+Tool to compress text files that represent pixel art using ANSI escape codes and visualize them.
 
 ## Usage
 
