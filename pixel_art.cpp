@@ -87,16 +87,14 @@ u_int32_t read_color(char *&ptr) {
 }
 
 
-void write_pixel_art(string file, string output_name = "") {
+void write_pixel_art(string file, string output_name) {
 	ifstream input(file);
 	if(input.fail()) {
         cout << "Error: File " << file << " does not exist.\n\n";
 		return;
 	}
-	string file_name = output_name.empty() ? file : output_name;
-	file_name = file_name.substr(0, file_name.find("."));
 	string directory = "./sprites/";
-	ofstream output(directory + file_name + ".bin");
+	ofstream output(directory + output_name);
 
 	// Sprite
 	const u_int8_t end_of_line = 0x00;
@@ -131,8 +129,7 @@ int getRLE(unsigned char c) {
 }
 
 
-void read_pixel_art(string file) {
-	string file_name = file + ".bin";
+void read_pixel_art(string file_name) {
 	string directory = "./sprites/";
 	ifstream input(directory + file_name);
 	if(input.fail()) {
@@ -176,14 +173,9 @@ void read_pixel_art(string file) {
 
 
 int main(int argc, char *argv[]) {
-	if(argc < 3)
-		cout << "Usage: ./pixel_art <mode> <input_file> [output_file]\n\n";
-	else if(string(argv[1]) == "-w") {
-		if(argc == 4)
-			write_pixel_art(argv[2], argv[3]);
-		else
-			write_pixel_art(argv[2]);
-	} else if(string(argv[1]) == "-r")
+	if(string(argv[1]) == "-w")
+		write_pixel_art(argv[2], argv[3]);
+	else if(string(argv[1]) == "-r")
 		read_pixel_art(argv[2]);
 	return 0;
 }
