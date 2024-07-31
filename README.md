@@ -4,12 +4,17 @@ Tool to compress text files that represent pixel art using ANSI escape codes and
 
 ## Usage
 
-Under development but for now use the following commands:
+Still under development but for now use the following command to get help:
 
 ```sh
-g++ pixel_art.cpp -o pixel_art -O3
-./pixel_art -w 001.txt
-./pixel_art -r output.bin
+python3 pixel_art.py [-h] {write,w,read,r} ...
+```
+
+An example:
+
+```sh
+python3 pixel_art.py w 001.txt Bulbasaur
+python3 pixel_art.py r Bulbasaur
 ```
 
 This should display a [Bulbasaur](https://github.com/shinya/pokemon-terminal-art/blob/main/fullcolor/bw/001.txt) in the terminal.
