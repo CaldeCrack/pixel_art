@@ -1,4 +1,4 @@
-# Compress pixel art 
+# TTY pixel art 
 
 Tool to compress text files that represent pixel art using ANSI escape codes and visualize them.
 
