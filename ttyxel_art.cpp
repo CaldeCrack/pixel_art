@@ -4,6 +4,7 @@
 #include <vector>
 using namespace std;
 
+string TXA_DIR = "/usr/local/opt/ttyxelart";
 
 // Write numeric value (maybe other types as well) to file
 template<typename T>
@@ -93,7 +94,7 @@ void write_pixel_art(string file, string output_name) {
         cout << "Error: File " << file << " does not exist.\n\n";
 		return;
 	}
-	string directory = "./sprites/";
+	string directory = TXA_DIR + "/sprites/";
 	ofstream output(directory + output_name);
 
 	// Sprite
@@ -130,7 +131,7 @@ int getRLE(unsigned char c) {
 
 
 void read_pixel_art(string file_name) {
-	string directory = "./sprites/";
+	string directory = TXA_DIR + "/sprites/";
 	ifstream input(directory + file_name);
 	if(input.fail()) {
         cout << "Error: File " << file_name << " does not exist.\n\n";

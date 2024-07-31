@@ -1,5 +1,6 @@
-import argparse, sys, subprocess, json, random
+#!/usr/bin/env python3
 
+import argparse, sys, subprocess, json, random, os
 
 parser = argparse.ArgumentParser(
 	prog='TTYxelArt',
@@ -26,15 +27,20 @@ if len(sys.argv) == 1:
     sys.exit(0)
 
 
+# File locations
+SCRIPT = os.path.realpath(__file__)
+TXA_DIR = os.path.dirname(SCRIPT)
+
+
 # Add data to JSON file in write mode
 def args_to_JSON_file(args : argparse.Namespace) -> str:
 	_, input_, output, alias, desc, form = vars(args).values()
 	input_ = input_.split('.')[0]
 	file_data : list = []
-	with open("sprites.json", 'r', encoding="utf8") as f:
+	with open(f"{TXA_DIR}/sprites.json", 'r', encoding="utf8") as f:
 		file_data = json.load(f)
 
-	with open("sprites.json", 'w', encoding="utf8") as f:
+	with open(f"{TXA_DIR}/sprites.json", 'w', encoding="utf8") as f:
 		name : str = output if output is not None else input_
 		if form is not None: # Add form to the corresponding sprite
 			form_name : str = form[0]
@@ -69,12 +75,13 @@ def args_to_JSON_file(args : argparse.Namespace) -> str:
 # Search binary file using JSON info
 def args_to_binary_file(args : argparse.Namespace) -> str | None:
 	_, name, form, show_random, show_list = vars(args).values()
-	with open("sprites.json", 'r', encoding="utf8") as f:
+	with open(f"{TXA_DIR}/sprites.json", 'r', encoding="utf8") as f:
 		file_data = json.load(f)
 		if show_random:
 			sprite = random.choice(file_data)
 			random_form = random.choice(list(sprite.get("forms").keys()))
-			print(f"- {sprite["name"]}\n{sprite["forms"].get(random_form)["desc"]}")
+			desc : str = sprite["forms"].get(random_form)["desc"]
+			print(f"- {sprite["name"]}\n{desc + '\n' if desc is not None else ''}", end='')
 			return sprite["forms"].get(random_form)["file"]
 
 		if show_list:
@@ -85,7 +92,8 @@ def args_to_binary_file(args : argparse.Namespace) -> str | None:
 		for sprite in file_data:
 			if name in sprite.get("alias(es)"):
 				try:
-					print(f"- {sprite["name"]}\n{sprite["forms"].get(form)["desc"]}")
+					desc : str = sprite["forms"].get(form)["desc"]
+					print(f"- {sprite["name"]}\n{desc + '\n' if desc is not None else ''}", end='')
 					return sprite["forms"].get(form)["file"]
 				except TypeError as e:
 					print(f"Error: Form doesn't exist for {sprite["name"]}\nAvailable forms:")
@@ -108,14 +116,14 @@ if args.subcommand == 'r': # read mode
 		print("\nError: Sprite not found")
 		sys.exit(0)
 
-	command_args = ("./pixel_art", "-r", file_name)
+	command_args = (f"{TXA_DIR}/txa", "-r", file_name)
 	popen = subprocess.Popen(command_args, stdout=subprocess.PIPE)
 	popen.wait()
 	output = popen.stdout.read()
 	print(output.decode('utf-8'), end='')
 else: # write mode
 	file_name : str | None = args_to_JSON_file(args)
-	command_args = ("./pixel_art", "-w", args.input, file_name)
+	command_args = (f"{TXA_DIR}/txa", "-w", args.input, file_name)
 	popen = subprocess.Popen(command_args, stdout=subprocess.PIPE)
 	popen.wait()
 	output = popen.stdout.read()
