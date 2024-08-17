@@ -78,7 +78,7 @@ options:
 
 ### Example
 
-Using the [001.txt](https://github.com/shinya/pokemon-terminal-art/blob/main/fullcolor/bw/001.txt) file that comes with the repo we will display a **Bulbasaur** in the terminal.
+Using the [001.txt](https://github.com/shinya/pokemon-terminal-art/blob/main/fullcolor/bw/001.txt) file that comes with the repo it will display a **Bulbasaur** in the terminal.
 
 ```
 txa w 001.txt bulbasaur -a Bulbasaur BULBASAUR -d "🌿 The first pokemon of the pokedex 🌿"
@@ -93,11 +93,12 @@ This could be useful for people who don't use a terminal that supports image ren
 
 The compression is achieved by creating a custom binary file with the data being reduced using [RLE](https://en.wikipedia.org/wiki/Run-length_encoding) (run-length encoding) and skipping characters that are not essential info. If you have any suggestion in how to compress the data even further feel free to do it (aside from converting the binary file into [zip](https://en.wikipedia.org/wiki/ZIP_(file_format)) like formats).
 
-I want a better name for the repo but I can't think of one right now.
-
 ## TO-DOs
 
-- [ ] Check sprite does not already exist when writing a new one.
+- [x] Reinstall script.
+- [x] Case insensitive search.
+- [x] Search by id.
+- [x] Check sprite does not already exist when writing a new one.
 - [ ] Add option to delete sprites (completely or a form different from the regular one).
 - [ ] Give random and list flags more options.
 - [ ] Add flag to group sprites (E.g. `<...> -g Pokemon` to set the sprite into the Pokemon group).
