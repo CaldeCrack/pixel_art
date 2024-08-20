@@ -99,7 +99,7 @@ The compression is achieved by creating a custom binary file with the data being
 - [x] Case insensitive search.
 - [x] Search by id.
 - [x] Check sprite does not already exist when writing a new one.
-- [ ] Add option to delete sprites (completely or a form different from the regular one).
+- [x] Add option to delete sprites (completely or a form different from the regular one).
 - [ ] Give random and list flags more options.
 - [ ] Add flag to group sprites (E.g. `<...> -g Pokemon` to set the sprite into the Pokemon group).
 - [ ] Transform PNGs and/or other image formats to my compressed format.
