@@ -9,15 +9,15 @@ Tool to compress text files that represent pixel art using ANSI escape codes and
 Use the following commands:
 
 ```sh
-git clone https://github.com/CaldeCrack/tty-pixel-art.git
-cd tty-pixel-art
-sudo ./install.sh
+> git clone https://github.com/CaldeCrack/tty-pixel-art.git
+> cd tty-pixel-art
+> sudo ./install.sh
 ```
 
 Make sure it is installed by executing:
 
 ```sh
-txa
+> txa
 ```
 
 This should display the program's help page.
@@ -67,7 +67,7 @@ options:
 usage: TTYxelArt read [-h] [-f FORM] [-r] [-l] [name]
 
 positional arguments:
-	name                  any alias of the sprite to display
+	name                  any alias of the sprite
 
 options:
 	-h, --help            show this help message and exit
@@ -81,8 +81,8 @@ options:
 Using the [001.txt](https://github.com/shinya/pokemon-terminal-art/blob/main/fullcolor/bw/001.txt) file that comes with the repo it will display a **Bulbasaur** in the terminal.
 
 ```
-txa w 001.txt bulbasaur -a Bulbasaur BULBASAUR -d "🌿 The first pokemon of the pokedex 🌿"
-txa r bulbasaur
+> txa w 001.txt bulbasaur -a Bulbasaur BULBASAUR -d "🌿 The first pokemon of the pokedex 🌿"
+> txa r bulbasaur
 ```
 
 ## About the project
