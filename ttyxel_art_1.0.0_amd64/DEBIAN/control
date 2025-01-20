@@ -1,0 +1,9 @@
+Package: ttyxel-art
+Version: 1.0.0
+Section: utils
+Priority: optional
+Architecture: amd64
+Essential: no
+Maintainer: CaldeCrack
+Depends: python3, python3-pip, python3-pillow
+Description: Tool to compress text files that represent pixel art using ANSI escape codes and visualize them

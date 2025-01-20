@@ -10,8 +10,7 @@ Use the following commands:
 
 ```sh
 > git clone https://github.com/CaldeCrack/tty-pixel-art.git
-> cd tty-pixel-art
-> sudo ./install.sh
+> ./install.sh
 ```
 
 Make sure it is installed by executing:
@@ -95,11 +94,13 @@ The compression is achieved by creating a custom binary file with the data being
 
 ## TO-DOs
 
-- [x] Reinstall script.
+- ~~[x] Reinstall script.~~
+- [x] Transform project into .deb package scheme.
 - [x] Case insensitive search.
 - [x] Search by id.
 - [x] Check sprite does not already exist when writing a new one.
 - [x] Add option to delete sprites (completely or a form different from the regular one).
+- [ ] Upgrade compression algorithm (using color caching).
 - [ ] Give random and list flags more options.
 - [ ] Add flag to group sprites (E.g. `<...> -g Pokemon` to set the sprite into the Pokemon group).
 - [ ] Transform PNGs and/or other image formats to my compressed format.

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 import argparse, sys, subprocess, json, random, os
 
 parser = argparse.ArgumentParser(
@@ -245,10 +244,14 @@ if args.subcommand == 'r': # Read mode
 		sys.exit(0)
 
 	command_args = (f"{TXA_DIR}/txa", "-r", file_name)
-	popen = subprocess.Popen(command_args, stdout=subprocess.PIPE)
+	popen = subprocess.Popen(command_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	popen.wait()
 	output = popen.stdout.read()
-	print(output.decode('utf-8'), end='')
+	err = popen.stderr.read()
+	if err:
+		print(err.decode('utf-8'), file=sys.stderr)
+	else:
+		print(output.decode('utf-8'), end='')
 elif args.subcommand == 'w': # Write mode
 	file_name : str | None = args_to_JSON_file(args)
 	if file_name is None:
@@ -256,9 +259,13 @@ elif args.subcommand == 'w': # Write mode
 		sys.exit(0)
 
 	command_args = (f"{TXA_DIR}/txa", "-w", args.input, file_name)
-	popen = subprocess.Popen(command_args, stdout=subprocess.PIPE)
+	popen = subprocess.Popen(command_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 	popen.wait()
 	output = popen.stdout.read()
-	print(output.decode('utf-8'), end='')
+	err = popen.stderr.read()
+	if err:
+		print(err.decode('utf-8'), file=sys.stderr)
+	else:
+		print(output.decode('utf-8'), end='')
 else: # Delete mode
 	delete_sprite(args)
