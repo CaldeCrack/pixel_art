@@ -471,4 +471,4 @@ Temporary Items
 *.app
 
 /.vscode
-!ttyxel_art_1.0.0_amd64/usr/local/bin/
+!ttyxel_art/usr/local/bin/
