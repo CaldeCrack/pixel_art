@@ -4,12 +4,74 @@
 #include <vector>
 using namespace std;
 
-string TXA_DIR = "/usr/local/opt/ttyxelart";
+const string TXA_DIR = "/usr/local/opt/ttyxelart";
+const string DIRECTORY = TXA_DIR + "/sprites/";
+const string BREAK = "00", COLOR = "01", INDEX = "10", SPACES = "11";
+const int RESOLUTION = 8; // 256x256 px
 
-// Write numeric value (maybe other types as well) to file
-template<typename T>
-void write_num(ofstream &file, const T value) {
-	file.write(reinterpret_cast<const char *>(&value), sizeof(value));
+class BitBuffer {
+private:
+    vector<u_int8_t> buffer;
+    u_int8_t currentByte;
+    int bitCount;
+
+    void write_byte_to_file(ofstream& outFile, u_int8_t byte) {
+        outFile.put(static_cast<char>(byte));
+    }
+
+public:
+    BitBuffer() : currentByte(0), bitCount(0) {}
+
+    // Write a string of bits to the buffer
+    void write_bits(const string& bits) {
+        for (char bit : bits) {
+            currentByte = (currentByte << 1) | (bit - '0');
+            bitCount++;
+
+            if (bitCount == 8) {
+                buffer.push_back(currentByte);
+                currentByte = 0;
+                bitCount = 0;
+            }
+        }
+    }
+
+    // Flush the buffer to a file, padding the last byte if necessary
+    void flush_to_file(const string& fileName) {
+        ofstream outFile(fileName, ios::binary);
+        if (!outFile.is_open()) {
+            throw ios_base::failure("Failed to open file for writing");
+        }
+
+        // Write all full bytes to the file
+        for (u_int8_t byte : buffer)
+            write_byte_to_file(outFile, byte);
+
+        // Handle any remaining bits
+        if (bitCount > 0) {
+            currentByte <<= (8 - bitCount);
+            currentByte |= (1 << (7 - bitCount));
+            write_byte_to_file(outFile, currentByte);
+        }
+
+        outFile.close();
+    }
+};
+
+
+template <typename T>
+string to_binary_string(T number, int length=RESOLUTION) {
+    if (number == 0)
+        return "0";
+
+    string binary = "";
+    while (number > 0) {
+        binary = (number % 2 == 0 ? "0" : "1") + binary;
+        number /= 2;
+	}
+
+	binary = string(length - binary.size(), '0') + binary;
+    return binary;
 }
 
 
@@ -19,26 +81,26 @@ void return_to_start(ifstream &file) {
 }
 
 
-u_int8_t concatenateDigits(const vector<char> &digits) {
-    u_int8_t number = 0;
+uint concatenate_digits(const vector<char> &digits) {
+    uint number = 0;
     for(char digit : digits)
         number = number * 10 + (digit - '0');
     return number;
 }
 
 
-u_int8_t read_transparency(char *&ptr) {
-	u_int8_t spaces = 0;
+string read_spaces(char *&ptr) {
+	uint spaces = 0;
 	while(*ptr != '\033') {
 		spaces++;
 		ptr += 2;
 	}
-	return spaces;
+	return to_binary_string(spaces);
 }
 
 
-u_int32_t read_color(char *&ptr) {
-	vector<u_int8_t> colors;
+pair<string, string> read_color(char *&ptr) {
+	vector<uint> colors;
 
 	ptr += 7; // Move to red color
 	// One iteration per color
@@ -48,14 +110,13 @@ u_int32_t read_color(char *&ptr) {
 			digits.push_back(*ptr);
 			ptr++;
 		}
-		colors.push_back(concatenateDigits(digits));
+		colors.push_back(concatenate_digits(digits));
 		ptr++;
 	}
 	ptr += 6; // Move to next pixel
 
 	// Count repetitions for RLE
-	u_int8_t alpha_mask = 0x80;
-	u_int8_t repetitions = 1;
+	uint repetitions = 1;
 
 	char *pixel_ptr = ptr;
 	while(*pixel_ptr == '\033') {
@@ -68,7 +129,7 @@ u_int32_t read_color(char *&ptr) {
 				digits.push_back(*color_ptr);
 				color_ptr++;
 			}
-			u_int8_t number = concatenateDigits(digits);
+			uint number = concatenate_digits(digits);
 			if(colors[i] != number)
 				goto end_while;
 			color_ptr++;
@@ -81,10 +142,10 @@ u_int32_t read_color(char *&ptr) {
 	end_while:
 	ptr = pixel_ptr;
 
-	// a-RLE-RGB bytes
+	// RLE-RGB bytes
 	// idk if this will be affected by endianness
-	u_int32_t rgba = (colors[2] << 24) + (colors[1] << 16) + (colors[0] << 8) + (alpha_mask + repetitions);
-	return rgba;
+	uint rgb = (colors[0] << 16) + (colors[1] << 8) + colors[2];
+	return {to_binary_string(repetitions), to_binary_string(rgb, 24)};
 }
 
 
@@ -94,28 +155,30 @@ void write_pixel_art(string file, string output_name) {
         cout << "Error: File " << file << " does not exist.\n\n";
 		return;
 	}
-	string directory = TXA_DIR + "/sprites/";
-	ofstream output(directory + output_name);
+	BitBuffer bitBuffer;
 
 	// Sprite
-	const u_int8_t end_of_line = 0x00;
 	string line;
 	while(getline(input, line)) {
 		char *ptr = (char *) line.c_str();
 		while(*ptr) {
 			if(*ptr == '\033') {
-				u_int32_t color = read_color(ptr);
-				write_num(output, color);
+				bitBuffer.write_bits(COLOR);
+				pair<string, string> color_pair = read_color(ptr);
+				string color_amount = color_pair.first, color = color_pair.second;
+				bitBuffer.write_bits(color_amount);
+				bitBuffer.write_bits(color);
 			} else if(*ptr == ' ') {
-				u_int8_t transparency = read_transparency(ptr);
-				write_num(output, transparency);
+				bitBuffer.write_bits(SPACES);
+				string space_amount = read_spaces(ptr);
+				bitBuffer.write_bits(space_amount);
 			}
 		}
-		write_num(output, end_of_line);
+		bitBuffer.write_bits(BREAK);
 	}
 
+	bitBuffer.flush_to_file(output_name);
 	input.close();
-	output.close();
 }
 
 
@@ -131,8 +194,7 @@ int getRLE(unsigned char c) {
 
 
 void read_pixel_art(string file_name) {
-	string directory = TXA_DIR + "/sprites/";
-	ifstream input(directory + file_name);
+	ifstream input(DIRECTORY + file_name);
 	if(input.fail()) {
         cout << "Error: File " << file_name << " does not exist.\n\n";
 		return;
