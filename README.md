@@ -94,7 +94,7 @@ The compression is achieved by creating a custom binary file with the data being
 
 ## TO-DOs
 
-- ~~[x] Reinstall script.~~
+- [x] ~~Reinstall script.~~
 - [x] Transform project into .deb package scheme.
 - [x] Case insensitive search.
 - [x] Search by id.
